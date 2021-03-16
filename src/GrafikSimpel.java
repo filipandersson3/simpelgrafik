@@ -23,20 +23,25 @@ public class GrafikSimpel extends Canvas {
         g.setColor(new Color(255,127,0));
         g.drawOval(200,200,80,20);
         drawTree(g, 100,200);
-        drawTree(g, 110,200);
-        drawTree(g, 120,200);
-        drawTree(g, 130,200);
-        drawTree(g, 140,200);
-        drawTree(g, 150,200);
+        drawMan(g,200,300);
     }
 
     private void drawTree(Graphics g, int x, int y) {
         g.setColor(new Color(0,128,0));
-        int[] xs = {0+x, 10+x, 20+x};
-        int[] ys = {30+y,0+y,30+y};
-        g.fillPolygon(xs,ys,3);
+        g.fillOval(x-10,y-10,40,30);
         g.setColor(new Color(200,128,30));
-        g.fillRect(7+x,30+y,6,10);
+        g.fillRect(7+x,20+y,6,20);
+    }
+
+    private void drawMan(Graphics g, int x, int y) {
+        g.setColor(new Color(241, 235, 149));
+        g.fillOval(x,y,70,70);
+        g.setColor(new Color(222, 222, 222));
+        g.fillOval(x+35-5-10,y+35-10,10,10);
+        g.fillOval(x+35-5+10,y+35-10,10,10);
+        g.setColor(new Color(21, 21, 21));
+        g.fillOval(x+35-5-5,y+35-7,5,5);
+        g.fillOval(x+35-5+10,y+35-7,5,5);
     }
 
     public static void main(String[] args) {
