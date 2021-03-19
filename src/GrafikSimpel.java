@@ -8,6 +8,12 @@ import java.awt.*;
  * @author Magnus Silverdal
  */
 public class GrafikSimpel extends Canvas {
+    private int width = 800;
+    private int height = 600;
+
+    private int manX, manY;
+    private int manVX, manVY;
+
     public GrafikSimpel() {
         JFrame frame = new JFrame("A simple painting");
         this.setSize(800,600);
@@ -15,15 +21,28 @@ public class GrafikSimpel extends Canvas {
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        manX = 300;
+        manY = 150;
+        manVX = 1;
+        manVY = 0;
+    }
+
+    public void update () {
+        manX += manVX;
+        if (manX > width) {
+            manVX = -1;
+        }
+        if (manX < 0) {
+            manVX = 1;
+        }
     }
 
     public void paint(Graphics g) {
-        g.setColor(Color.black);
-        g.fillRect(200,200,80,20);
-        g.setColor(new Color(255,127,0));
-        g.drawOval(200,200,80,20);
+        update();
         drawTree(g, 100,200);
-        drawMan(g,200,300);
+        drawMan(g, manX, manY);
+        repaint();
     }
 
     private void drawTree(Graphics g, int x, int y) {
