@@ -1,8 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
  * This is a class
@@ -19,11 +21,13 @@ public class Grafik extends Canvas implements Runnable {
     private BufferStrategy bs;
     //private BufferedImage image;
 
-    private int manX, manY;
+    private Rectangle man;
     private int manVX, manVY;
 
-    private int treeX, treeY;
+    private Rectangle tree;
     private int treeVX, treeVY;
+
+    private Image marioimg;
 
     private Thread thread;
 
@@ -37,26 +41,40 @@ public class Grafik extends Canvas implements Runnable {
         frame.setVisible(true);
         isRunning = false;
 
-        manX = 300;
-        manY = 150;
+        //marioimg = ImageIO.read(new File("supermario2.png"));
+
+        man = new Rectangle(200,200,100,100);
         manVX = 10;
-        manVY = 0;
-        treeX = 200;
-        treeY = 200;
+        manVY = 5;
+        tree = new Rectangle(200,200,100,100);
         treeVX = 0;
         treeVY = 0;
     }
 
     public void update () {
-        manX += manVX;
-        if (manX > width) {
+        man.x += manVX;
+        man.y += manVY;
+        if (man.x > width - man.width) {
             manVX = -manVX;
         }
-        if (manX < 0) {
+        if (man.x < 0) {
             manVX = -manVX;
         }
-        treeX += treeVX;
-        treeY += treeVY;
+        if (man.y > height - man.height) {
+            manVY = -manVY;
+        }
+        if (man.y < 0) {
+            manVY = -manVY;
+        }
+        tree.x += treeVX;
+        tree.y += treeVY;
+        if (man.intersects(tree)) {
+            if (man.x < tree.x+tree.width && man.y > tree.y && manVY > 0)  {
+                manVX = -manVX;
+            } else if (man.x < tree.x+tree.width && man.y < tree.y && manVY > 0)  {
+                manVY = -manVY;
+            }
+        }
 
     }
 
@@ -72,8 +90,8 @@ public class Grafik extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         g.fillRect(0,0,width,height);
         drawTree(g, 100,200);
-        drawTree(g, treeX, treeY);
-        drawMan(g, manX, manY);
+        drawTree(g, tree.x, tree.y);
+        drawMan(g, man.x, man.y);
         g.dispose();
         bs.show();
     }
