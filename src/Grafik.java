@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * This is a class
@@ -13,13 +14,21 @@ import java.io.File;
  * @author Magnus Silverdal
  */
 public class Grafik extends Canvas implements Runnable {
-    private int width = 800;
-    private int height = 600;
-    int fps = 30;
+    private int width = 1440;
+    private int height = 980;
+    int fps = 60;
     private boolean isRunning;
 
     private BufferStrategy bs;
     //private BufferedImage image;
+
+    private Rectangle pipe;
+    private int pipeVX, pipeVY;
+    private BufferedImage pipeImg;
+
+    private Rectangle bird;
+    private double birdVX, birdVY;
+    private BufferedImage birdImg;
 
     private Rectangle man;
     private int manVX, manVY;
@@ -27,13 +36,11 @@ public class Grafik extends Canvas implements Runnable {
     private Rectangle tree;
     private int treeVX, treeVY;
 
-    private Image marioimg;
-
     private Thread thread;
 
     public Grafik() {
         JFrame frame = new JFrame("A simple painting");
-        this.setSize(800,600);
+        this.setSize(width,height);
         frame.add(this);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,8 +48,19 @@ public class Grafik extends Canvas implements Runnable {
         frame.setVisible(true);
         isRunning = false;
 
-        //marioimg = ImageIO.read(new File("supermario2.png"));
-
+        try {
+            birdImg = ImageIO.read(new File("bird.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            pipeImg = ImageIO.read(new File("pipe.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bird = new Rectangle(300,100,100,100);
+        pipe = new Rectangle(width,500,150,400);
+        pipeVX = -5;
         man = new Rectangle(200,200,100,100);
         manVX = 10;
         manVY = 5;
@@ -75,7 +93,18 @@ public class Grafik extends Canvas implements Runnable {
                 manVY = -manVY;
             }
         }
-
+        birdVY += 0.5;
+        bird.y += birdVY;
+        pipe.x += pipeVX;
+        if (pipe.x == -200) {
+            pipe.x = width;
+        }
+        if (bird.intersects(pipe)) {
+            System.exit(0);
+        }
+        if (bird.y == 0) {
+            System.exit(0);
+        }
     }
 
     public void draw() {
@@ -86,12 +115,14 @@ public class Grafik extends Canvas implements Runnable {
         }
         Graphics g = bs.getDrawGraphics();
 
-        update();
+        //update();
         g.setColor(Color.WHITE);
         g.fillRect(0,0,width,height);
         drawTree(g, 100,200);
         drawTree(g, tree.x, tree.y);
         drawMan(g, man.x, man.y);
+        g.drawImage(pipeImg, pipe.x, pipe.y, pipe.width, pipe.height, null);
+        g.drawImage(birdImg, bird.x, bird.y, bird.width+100, bird.height+100, null);
         g.dispose();
         bs.show();
     }
@@ -167,6 +198,7 @@ public class Grafik extends Canvas implements Runnable {
             }
             if (keyEvent.getKeyChar() == 'w') {
                 treeVY = -5;
+                birdVY = -10;
             }
             if (keyEvent.getKeyChar() == 's') {
                 treeVY = 5;
