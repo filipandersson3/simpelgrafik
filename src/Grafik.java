@@ -1,3 +1,5 @@
+import javafx.scene.canvas.GraphicsContext;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -20,11 +22,6 @@ public class Grafik extends Canvas implements Runnable {
     private boolean isRunning;
 
     private BufferStrategy bs;
-    //private BufferedImage image;
-
-    private Rectangle pipe;
-    private int pipeVX, pipeVY;
-    private BufferedImage pipeImg;
 
     private Rectangle bird;
     private double birdVX, birdVY;
@@ -38,6 +35,8 @@ public class Grafik extends Canvas implements Runnable {
 
     private Thread thread;
 
+    Pipe[] pipeList = new Pipe[5];
+
     public Grafik() {
         JFrame frame = new JFrame("A simple painting");
         this.setSize(width,height);
@@ -47,20 +46,17 @@ public class Grafik extends Canvas implements Runnable {
         this.addKeyListener(new KL());
         frame.setVisible(true);
         isRunning = false;
+        for (int i = 0; i <= 4; i++) {
+            pipeList[i] = new Pipe();
+            pipeList[i].pipe.x = i*1000;
+        }
 
         try {
             birdImg = ImageIO.read(new File("bird.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            pipeImg = ImageIO.read(new File("pipe.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         bird = new Rectangle(300,100,100,100);
-        pipe = new Rectangle(width,500,150,400);
-        pipeVX = -5;
         man = new Rectangle(200,200,100,100);
         manVX = 10;
         manVY = 5;
@@ -70,6 +66,9 @@ public class Grafik extends Canvas implements Runnable {
     }
 
     public void update () {
+        for (int i = 0; i <= 4; i++) {
+            pipeList[i].updatePipe();
+        }
         man.x += manVX;
         man.y += manVY;
         if (man.x > width - man.width) {
@@ -95,14 +94,10 @@ public class Grafik extends Canvas implements Runnable {
         }
         birdVY += 0.5;
         bird.y += birdVY;
-        pipe.x += pipeVX;
-        if (pipe.x == -200) {
-            pipe.x = width;
-        }
-        if (bird.intersects(pipe)) {
+        if (bird.y <= 0-bird.height) {
             System.exit(0);
         }
-        if (bird.y == 0) {
+        if (bird.y >= height) {
             System.exit(0);
         }
     }
@@ -121,7 +116,9 @@ public class Grafik extends Canvas implements Runnable {
         drawTree(g, 100,200);
         drawTree(g, tree.x, tree.y);
         drawMan(g, man.x, man.y);
-        g.drawImage(pipeImg, pipe.x, pipe.y, pipe.width, pipe.height, null);
+        for (int i = 0; i <= 4; i++) {
+            pipeList[i].drawPipe(g);
+        }
         g.drawImage(birdImg, bird.x, bird.y, bird.width+100, bird.height+100, null);
         g.dispose();
         bs.show();
@@ -222,44 +219,29 @@ public class Grafik extends Canvas implements Runnable {
         }
     }
 
-    private class ML implements MouseListener {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
+    private class Pipe {
+        private Rectangle pipe = new Rectangle(width,500,150,400);
+        private int pipeVX = -5;
+        private BufferedImage pipeImg;
+        {
+            try {
+                pipeImg = ImageIO.read(new File("pipe.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        @Override
-        public void mousePressed(MouseEvent e) {
-
+        void updatePipe() {
+            pipe.x += pipeVX;
+            if (bird.intersects(pipe)) {
+                System.exit(0);
+            }
+            if (pipe.x == -200) {
+                pipe.x = width;
+            }
         }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-    }
-
-    private class MML implements MouseMotionListener {
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-
+        void drawPipe(Graphics g) {
+            g.drawImage(pipeImg, pipe.x, pipe.y, pipe.width, pipe.height, null);
         }
     }
 }
