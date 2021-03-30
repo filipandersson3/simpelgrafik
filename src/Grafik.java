@@ -8,6 +8,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This is a class
@@ -49,6 +50,7 @@ public class Grafik extends Canvas implements Runnable {
         for (int i = 0; i <= 4; i++) {
             pipeList[i] = new Pipe();
             pipeList[i].pipe.x = i*1000;
+            pipeList[i].pipe.y = ThreadLocalRandom.current().nextInt(300, height + 300-300);
         }
 
         try {
@@ -238,6 +240,7 @@ public class Grafik extends Canvas implements Runnable {
             }
             if (pipe.x == -200) {
                 pipe.x = width;
+                pipe.y = ThreadLocalRandom.current().nextInt(300, height-300);
             }
         }
         void drawPipe(Graphics g) {
