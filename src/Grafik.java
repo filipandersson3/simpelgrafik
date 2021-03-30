@@ -50,7 +50,7 @@ public class Grafik extends Canvas implements Runnable {
         for (int i = 0; i <= 4; i++) {
             pipeList[i] = new Pipe();
             pipeList[i].pipe.x = i*1000;
-            pipeList[i].pipe.y = ThreadLocalRandom.current().nextInt(300, height + 300-300);
+            pipeList[i].pipe.y = ThreadLocalRandom.current().nextInt(300, height-300);
         }
 
         try {
